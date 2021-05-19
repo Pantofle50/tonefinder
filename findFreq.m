@@ -41,32 +41,37 @@ f = f(1:lim);
 
 % Find maximum in the FFT image
 fft_max = 0;
-i_max = 0;
 n_max = 1;
+fft_min_level = 30;
+fft_downslope_cntr = 0;
+%for i = 1:length(fft_w)
+%  
+%  if fft_w(i)>fft_max
+%    fft_max = fft_w(i);
+%    n_max = i;
+%    i_max = i_max + 1;
+%  endif
+%
+%endfor
 
-for i = 1:length(fft_w)
+i = 1;
+
+while ((fft_downslope_cntr < 5) && (i < (length(fft_w)-1)))
+
+  if (fft_w(i) > fft_min_level)
   
-  if fft_w(i)>fft_max
-    fft_max = fft_w(i);
-    n_max = i;
-    i_max = i_max + 1;
+    if (fft_w(i) > fft_max)
+      fft_max = fft_w(i);
+      n_max = i;
+    endif
+       
+    if ((fft_w(i+1) - fft_w(i)) < 0)
+      fft_downslope_cntr++;
+    endif
+  
   endif
-
-endfor
-
-% Find the 1st harmonics
-while n_max > 2
   
-  if  (fft_w(round(n_max/2)) > 30)
-    
-    n_max = round(n_max/2);
-    
-  else
-  
-    break;
-    
-  endif
-  
+  i++;
 endwhile
 
 f_max = f(n_max);

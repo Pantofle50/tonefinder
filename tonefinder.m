@@ -51,7 +51,7 @@ for i_w = 0:(w_count - 1)
 endfor
 
 % Debug - get specific window
-debug_w_num = 12;
+debug_w_num = 33;
 
 windowed_audio = raw_audio(1 + (debug_w_num * w_length):(debug_w_num + 1) * w_length);
 player = audioplayer(windowed_audio, fs);
@@ -63,5 +63,5 @@ figure(1)
 subplot(2,1,1)
 plot(windowed_audio)
 subplot(2,1,2)
-plot(f,fft_w)
+plot(f,fft_w,"-.")
 title (strcat("Peak:  ",num2str(f_max), "Hz   ", "  Window:  ", num2str(t_window), " s /  ", num2str(w_length), " samples"));
