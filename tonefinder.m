@@ -2,7 +2,7 @@ clc;
 clear all;
 
 % Load wav
-[raw_audio, fs] = audioread("A_17s.wav");
+[raw_audio, fs] = audioread("A-G_1s_period.wav");
 player = audioplayer(raw_audio, fs);  % Play if needed
 
 % Combine L and R channels together
@@ -21,6 +21,8 @@ Ts = 1/fs;
 
 N_FFT = 100e3;
 
+TONES = generateToneTable(82.41);
+
 f_lim = 2000; % Limit of the frequency axis in Hz
 n_lim = f_lim/(fs/N_FFT);
 
@@ -30,7 +32,9 @@ w_length = round (t_window/Ts);
 
 % Number of windows to be checked
 w_count = ceil(length(raw_audio) / w_length);
-disp(strcat("Number of windows:  ",num2str(w_count)));
+disp(strcat("Number of windows:  ", num2str(w_count)));
+
+
 
 for i_w = 0:(w_count - 1)
   
@@ -44,24 +48,26 @@ for i_w = 0:(w_count - 1)
   
   windowed_audio = raw_audio(n_start:n_end);
   
-  [f_max amp f fft_w] = findFreq(windowed_audio, n_lim, fs);
+  [f_max amp f fft_w] = findFreq(windowed_audio, n_lim, fs, N_FFT);
 
-  disp(strcat("W:", num2str(i_w), "\tf:", num2str(f_max), "\tA:", num2str(amp)));
-  
+  disp(strcat("W:", num2str(i_w), "\tf:", num2str(f_max), "\tA:", num2str(amp), "\tTone: ", char(getToneName(TONES,f_max))));
+
 endfor
 
 % Debug - get specific window
-debug_w_num = 33;
+debug_w_num = 13;
 
 windowed_audio = raw_audio(1 + (debug_w_num * w_length):(debug_w_num + 1) * w_length);
 player = audioplayer(windowed_audio, fs);
 
-[f_max amp f fft_w] = findFreq(windowed_audio, n_lim, fs);
+[f_max amp f fft_w] = findFreq(windowed_audio, n_lim, fs, N_FFT);
 
 
 figure(1)
 subplot(2,1,1)
 plot(windowed_audio)
+title (strcat("W:", num2str(i_w), "  f:", num2str(f_max), "  A:", num2str(amp), "  Tone: ", char(getToneName(TONES,f_max))));
+
 subplot(2,1,2)
 plot(f,fft_w,"-.")
 title (strcat("Peak:  ",num2str(f_max), "Hz   ", "  Window:  ", num2str(t_window), " s /  ", num2str(w_length), " samples"));

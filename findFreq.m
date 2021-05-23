@@ -22,10 +22,8 @@
 ## Author: Fujitsu <Fujitsu@FUJITSU-NTB>
 ## Created: 2021-05-16
 
-function [f_max amp f spectrum] = findFreq (rawAudio, lim, fs)
+function [f_max amp f spectrum] = findFreq (rawAudio, lim, fs, N_FFT)
   
-N_FFT = 100e3;
-
 % Get FFT of the audio 
 fft_w = fft(rawAudio, N_FFT);
 fft_w = fft_w(1:length(fft_w)/2);
@@ -33,7 +31,7 @@ fft_w = abs(fft_w);
 
 fft_w = fft_w(1:lim);
 
-% Define frequency axis
+% Define the frequency axis
 f = 0:fs/N_FFT:fs-fs/N_FFT;
 f = f(1:length(f)/2);
 
@@ -44,6 +42,10 @@ fft_max = 0;
 n_max = 1;
 fft_min_level = 30;
 fft_downslope_cntr = 0;
+
+f_guitar_max = 1050;
+f_guitar_min = 80;
+
 %for i = 1:length(fft_w)
 %  
 %  if fft_w(i)>fft_max
@@ -58,7 +60,7 @@ i = 1;
 
 while ((fft_downslope_cntr < 5) && (i < (length(fft_w)-1)))
 
-  if (fft_w(i) > fft_min_level)
+  if ((fft_w(i) > fft_min_level) && (f(i) > f_guitar_min) && (f(i) < f_guitar_max))
   
     if (fft_w(i) > fft_max)
       fft_max = fft_w(i);
